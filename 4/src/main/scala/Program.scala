@@ -14,7 +14,7 @@ object Program {
     val count = getCount
     val system = ActorSystem()
     val createNode = getNodeCtor
-    val numbers = for (i <- 0 until count) yield Random nextInt 10
+    val numbers = for (i <- 0 until count) yield Random nextInt ()
     val sum = numbers.sum
     val rand = new RandomProvider {
       val iter = numbers.iterator
