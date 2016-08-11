@@ -5,57 +5,31 @@
 
 ```
 sbt run
-
 Node 0. Number - 1567135050
-
 Node 1. Number - 405049488
-
 Node 2. Number - 1337413465
-
 Node 3. Number - 619308782
-
 Node 4. Number - -1268040045
-
 Node 1. Sending 405049488 to Node 0
-
 Node 0. Recieved 405049488
-
 Node 2. Sending 1337413465 to Node 0
-
 Node 0. Recieved 1337413465
-
 Node 3. Sending 619308782 to Node 0
-
 Node 0. Recieved 619308782
-
 Node 4. Sending -1268040045 to Node 0
-
 Node 0. Recieved -1268040045
-
 Node 0. Sending -1634100556 to Node 1
-
 Node 0. Sending -1634100556 to Node 2
-
 Node 0. Sending -1634100556 to Node 3
-
 Node 0. Sending -1634100556 to Node 4
-
 Node 1. Recieved -1634100556
-
 Node 0. Calculated sum - -1634100556
-
 Node 1. Calculated sum - -1634100556
-
 Node 4. Recieved -1634100556
-
 Node 4. Calculated sum - -1634100556
-
 Node 3. Recieved -1634100556
-
 Node 3. Calculated sum - -1634100556
-
 Node 2. Recieved -1634100556
-
 Node 2. Calculated sum - -1634100556
 ```
 # 2. Алгоритм, в котором сумма - затратная операция.
