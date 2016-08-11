@@ -36,7 +36,8 @@ Node 2. Calculated sum - -1634100556
 Нулевая нода отправляет свое секретное число первой ноде, первая нода складывает его со своим секретным числом и отправляет дальше. Так до последней ноды. На последней ноде находится сумма всех чисел и она эту сумму отправляет нулевой ноде, нулевая первой и так до предпоследней.
 
 Приблизительный вывод на консоль:
-`sbt run`
+```
+sbt run
 Node 0. Number - -106105964
 Node 1. Number - -1622096388
 Node 2. Number - 1878689098
@@ -63,12 +64,13 @@ Node 2. Calculated sum - 2008402247
 Node 2. Sending 2008402247 to Node 3
 Node 3. Recieved 2008402247
 Node 3. Calculated sum - 2008402247
-
+```
 # 4. Приложение с использованием Akka и выбором между двумя алгоритмами простым и алгоритмом, в котором сумма - затратная операция. Есть возможность указания количества нод.
 
 Приблизительный вывод на консоль:
 
-`sbt run`
+```
+sbt run
 Input node count (1 - 2147483647): 5
 1. Simple algorithm.
 2. Expensive sum algorithm.
@@ -99,8 +101,10 @@ Info. Node 0. Sending -1047888622 to Node 4
 Info. Node 0. Calculated sum - -1047888622
 Info. Node 4. Recieved -1047888622
 Info. Node 4. Calculated sum - -1047888622
+```
 
-`sbt run`
+```
+sbt run
 Input node count (1 - 2147483647): 5
 1. Simple algorithm.
 2. Expensive sum algorithm.
@@ -131,8 +135,10 @@ Info. Node 2. Calculated sum - -1458576721
 Info. Node 2. Sending -1458576721 to Node 3
 Info. Node 3. Recieved -1458576721
 Info. Node 3. Calculated sum - -1458576721
+```
 
 Вывод `sbt test`
+```
 [info] SimpleAlgorithmSpec:
 [info] A simple algorithm
 [info] - should give correct sum on one node
@@ -147,3 +153,4 @@ Info. Node 3. Calculated sum - -1458576721
 [info] Suites: completed 2, aborted 0
 [info] Tests: succeeded 5, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
+```
