@@ -1,6 +1,6 @@
 package griddynamicsexercise
 
-import scala.collection.mutable.{ArrayBuffer, HashMap}
+import scala.collection.mutable.{ ArrayBuffer, HashMap }
 
 import akka.actor.ActorRef
 

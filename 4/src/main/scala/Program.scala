@@ -52,13 +52,15 @@ object Program {
     do {
       n = readLine(s"""1. Simple algorithm.
                       |2. Expensive sum algorithm.
-                      |Select algorithm (1 or 2): """.stripMargin).toIntOpt
+                      |3. Tree-based algorithm.
+                      |Select algorithm (1 or 2 or 3): """.stripMargin).toIntOpt
     }
-    while(n == None || (n.get != 1 && n.get != 2));
+    while(n == None || (n.get != 1 && n.get != 2 && n.get != 3));
 
     n.get match {
-      case 1 => (i, count, rand, sums, nodes) => { new SimpleNode(i, count, rand, sums, nodes) }
-      case 2 => (i, count, rand, sums, nodes) => { new ExpensiveSumNode(i, count, rand, sums, nodes) }
+      case 1 => (i, count, rand, sums, nodes) => new SimpleNode(i, count, rand, sums, nodes)
+      case 2 => (i, count, rand, sums, nodes) => new ExpensiveSumNode(i, count, rand, sums, nodes)
+      case 3 => (i, count, rand, sums, nodes) => new TreeNode(i, count, rand, sums, nodes) 
     }
   }
 }

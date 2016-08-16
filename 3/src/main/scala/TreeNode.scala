@@ -6,8 +6,7 @@ import scala.concurrent.blocking
 
 class TreeNode(id: Int, count: Int) {
 
-  private val m_number = Random nextInt 10
-  private val m_isLast = id == count - 1
+  private val m_number = Random nextInt ()
 
   private val m_parent: Option[Int] = {
     val isEven = (id + 1) % 2 == 0
@@ -51,9 +50,7 @@ class TreeNode(id: Int, count: Int) {
         case (Some(parent), None, None) =>
           sendTo(parent, m_number)
           println(s"Node $id. Receiving sum.")
-          blocking {
-            printSum(recv)
-          }
+          blocking { printSum(recv) }
 
         case (Some(parent), None, Some(right)) =>
           println(s"Node $id. Receiving rightNumber.")
