@@ -5,6 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import StringUtils._
 import scala.io.StdIn.readLine
+import scala.collection.mutable.HashMap
 
 case object Start
 
@@ -20,13 +21,15 @@ object Program {
       val iter = numbers.iterator
       def nextInt = iter.next
     }
-    val nodeManager = system actorOf Props(new NodeManager(new ArrayBuffer))
+    val sums = ArrayBuffer[Int]()
+    val nodes = HashMap[Int, ActorRef]()
+    for (i <- 0 until count) {
+      val actor = system actorOf (Props(createNode(i, count, rand, sums, nodes)), s"Node$i")
+      nodes += ((i, actor))
+    }
 
-    val actors = for (i <- 0 until count)
-    yield system actorOf (Props(createNode(i, count, rand, nodeManager)), s"Node$i")
-
-    for (actor <- actors) {
-      (actor ! Start)
+    for ((_, node) <- nodes) {
+      (node ! Start)
     }
 
     system.awaitTermination()
@@ -43,7 +46,7 @@ object Program {
     n.get
   }
 
-  def getNodeCtor(): (Int, Int, RandomProvider, ActorRef) => Node = {
+  def getNodeCtor(): (Int, Int, RandomProvider, ArrayBuffer[Int], HashMap[Int, ActorRef]) => Node = {
     var n: Option[Int] = None
 
     do {
@@ -54,8 +57,8 @@ object Program {
     while(n == None || (n.get != 1 && n.get != 2));
 
     n.get match {
-      case 1 => (i, count, rand, nodeManager) => { new SimpleNode(i, count, rand, nodeManager) }
-      case 2 => (i, count, rand, nodeManager) => { new ExpensiveSumNode(i, count, rand, nodeManager) }
+      case 1 => (i, count, rand, sums, nodes) => { new SimpleNode(i, count, rand, sums, nodes) }
+      case 2 => (i, count, rand, sums, nodes) => { new ExpensiveSumNode(i, count, rand, sums, nodes) }
     }
   }
 }

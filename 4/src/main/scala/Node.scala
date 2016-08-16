@@ -1,48 +1,50 @@
 package griddynamicsexercise
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.collection.mutable.{ArrayBuffer, HashMap}
 
 import Logger._
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.pattern.ask
-import akka.util.Timeout
 
-abstract class Node(id: Int, count: Int, rand: RandomProvider, nodeManager: ActorRef)
-  extends Actor with ActorLogging {
+case class Message(value: Int)
+
+abstract class Node(
+  id: Int,
+  count: Int,
+  rand: RandomProvider,
+  sums: ArrayBuffer[Int],
+  nodes: HashMap[Int, ActorRef]
+) extends Actor with ActorLogging {
 
   protected val p_number = rand nextInt ()
+  protected var p_receivedMessages = 0
 
   info(s"Node $id. Number - $p_number")
-  nodeManager ! RegisterNode(id)
 
   def sendTo(id: Int, value: Int): Unit = {
     info(s"Node ${this.id}. Sending $value to Node $id")
-    nodeManager ! SendMessage(id, value)
-  }
-
-  def recv: Int = {
-    implicit val timeout = Timeout(5.seconds)
-    val valueF = nodeManager ? GetMessage(id)
-    val value = Await.result(valueF, timeout.duration).asInstanceOf[Int]
-    info(s"Node $id. Recieved $value")
-    value
+    nodes(id) ! Message(value)
   }
 
   def receive = {
-    case Start => Future { startAlgorithm() }
+    case Start =>
+      if (count == 1) printSum(p_number)
+      else startAlgorithm()
+
+    case Message(value) =>
+      info(s"Node $id. Recieved $value")
+      p_receivedMessages += 1
+      onMessageRecieved(value)
+
     case value => warning(s"Unexpected: $value")
   }
 
   def startAlgorithm(): Unit
 
-  def endAlgorithm(sum: Int): Unit = {
-    nodeManager ! Unregister(id, sum)
-  }
+  def onMessageRecieved(value: Int): Unit
 
   protected def printSum(sum: Int): Unit = {
     info(s"Node $id. Calculated sum - $sum")
-    endAlgorithm(sum)
+    sums += sum
+    if (sums.length == count) context.system.shutdown()
   }
 }
