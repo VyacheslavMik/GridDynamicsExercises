@@ -65,7 +65,75 @@ Node 2. Sending 2008402247 to Node 3
 Node 3. Recieved 2008402247
 Node 3. Calculated sum - 2008402247
 ```
-# 4. Приложение с использованием Akka и выбором между двумя алгоритмами простым и алгоритмом, в котором сумма - затратная операция. Есть возможность указания количества нод.
+
+# 3. Алгоритм, основанный на двоичном дереве.
+Ноды, под которыми нет дочерних нод, отправляют свое число родителю и ждут сумму. Ноды, под которыми есть дочерние ноды, ждут чисел от дочерних нод, после получения чисел от дочерних нод посылают сумму чисел дочерних нод и своего числа - родителю; ждут сумму; после получения суммы отправляют ее своим дочерним нодам. Корневая нода ждет чисел от дочерних нод, после получения, складывает их со своим числом и отсылает сумму своим дочерним нодам.
+
+Приблизительный вывод на консоль:
+```
+sbt run
+Node 0. Parent - None. Left - Some(1). Right - Some(2). Number - 1327446636
+Node 1. Parent - Some(0). Left - Some(3). Right - Some(4). Number - 973813061
+Node 2. Parent - Some(0). Left - Some(5). Right - Some(6). Number - 2127258231
+Node 3. Parent - Some(1). Left - None. Right - None. Number - 153782927
+Node 4. Parent - Some(1). Left - None. Right - None. Number - 96345053
+Node 5. Parent - Some(2). Left - None. Right - None. Number - -1016266174
+Node 6. Parent - Some(2). Left - None. Right - None. Number - 1703230443
+Node 0. Starting
+Node 0. Receiving rightNumber.
+Node 2. Starting
+Node 2. Receiving leftNumber.
+Node 1. Starting
+Node 1. Receiving leftNumber.
+Node 3. Starting
+Node 3. Sending 153782927 to Node 1
+Node 3. Receiving sum.
+Node 1. Recieved 153782927
+Node 1. Receiving rightNumber.
+Node 4. Starting
+Node 4. Sending 96345053 to Node 1
+Node 1. Recieved 96345053
+Node 1. Sending 1223941041 to Node 0
+Node 1. Receiving sum.
+Node 0. Recieved 1223941041
+Node 0. Receiving leftNumber.
+Node 4. Receiving sum.
+Node 5. Starting
+Node 5. Sending -1016266174 to Node 2
+Node 5. Receiving sum.
+Node 2. Recieved -1016266174
+Node 2. Receiving rightNumber.
+Node 6. Starting
+Node 6. Sending 1703230443 to Node 2
+Node 6. Receiving sum.
+Node 2. Recieved 1703230443
+Node 2. Sending -1480744796 to Node 0
+Node 2. Receiving sum.
+Node 0. Recieved -1480744796
+Node 0. Sending 1070642881 to Node 1
+Node 0. Sending 1070642881 to Node 2
+Node 0. Calculated sum - 1070642881
+Node 1. Recieved 1070642881
+Node 1. Sending 1070642881 to Node 3
+Node 1. Sending 1070642881 to Node 4
+Node 1. Calculated sum - 1070642881
+Node 4. Recieved 1070642881
+Node 4. Calculated sum - 1070642881
+Node 3. Recieved 1070642881
+Node 3. Calculated sum - 1070642881
+Node 2. Recieved 1070642881
+Node 2. Sending 1070642881 to Node 5
+Node 2. Sending 1070642881 to Node 6
+Node 2. Calculated sum - 1070642881
+Node 5. Recieved 1070642881
+Node 5. Calculated sum - 1070642881
+Node 6. Recieved 1070642881
+Node 6. Calculated sum - 1070642881
+Program end
+```
+
+
+# 4. Приложение с использованием Akka и выбором между тремя алгоритмами - простым, алгоритмом, в котором сумма - затратная операция и алгоритме основанном на двоичном дереве. Есть возможность указания количества нод.
 
 Приблизительный вывод на консоль:
 
@@ -74,7 +142,8 @@ sbt run
 Input node count (1 - 2147483647): 5
 1. Simple algorithm.
 2. Expensive sum algorithm.
-Select algorithm (1 or 2): 1
+3. Tree-based algorithm.
+Select algorithm (1 or 2 or 3): 1
 Info. Node 3. Number - 385889962
 Info. Node 4. Number - -1019037654
 Info. Node 2. Number - 220990364
@@ -108,7 +177,8 @@ sbt run
 Input node count (1 - 2147483647): 5
 1. Simple algorithm.
 2. Expensive sum algorithm.
-Select algorithm (1 or 2): 2
+3. Tree-based algorithm.
+Select algorithm (1 or 2 or 3): 2
 Info. Node 2. Number - -838547795
 Info. Node 3. Number - -347199041
 Info. Node 1. Number - -242957373
@@ -137,20 +207,59 @@ Info. Node 3. Recieved -1458576721
 Info. Node 3. Calculated sum - -1458576721
 ```
 
+```
+Input node count (1 - 2147483647): 5
+1. Simple algorithm.
+2. Expensive sum algorithm.
+3. Tree-based algorithm.
+Select algorithm (1 or 2 or 3): 3
+Info. Node 1. Number - 1057108801
+Info. Node 0. Number - 1130868442
+Info. Node 4. Number - 1480056064
+Info. Node 3. Number - -821556568
+Info. Node 2. Number - 334999934
+Info. Node 4. Sending 1480056064 to Node 1
+Info. Node 2. Sending 334999934 to Node 0
+Info. Node 3. Sending -821556568 to Node 1
+Info. Node 0. Recieved 334999934
+Info. Node 1. Recieved 1480056064
+Info. Node 1. Recieved -821556568
+Info. Node 1. Sending 1715608297 to Node 0
+Info. Node 0. Recieved 1715608297
+Info. Node 0. Sending -1113490623 to Node 1
+Info. Node 0. Sending -1113490623 to Node 2
+Info. Node 1. Recieved -1113490623
+Info. Node 2. Recieved -1113490623
+Info. Node 0. Calculated sum - -1113490623
+Info. Node 2. Calculated sum - -1113490623
+Info. Node 1. Sending -1113490623 to Node 3
+Info. Node 1. Sending -1113490623 to Node 4
+Info. Node 3. Recieved -1113490623
+Info. Node 3. Calculated sum - -1113490623
+Info. Node 1. Calculated sum - -1113490623
+Info. Node 4. Recieved -1113490623
+Info. Node 4. Calculated sum - -1113490623
+```
+
 Вывод `sbt test`
 ```
 [info] SimpleAlgorithmSpec:
 [info] A simple algorithm
 [info] - should give correct sum on one node
 [info] - should give correct sum on n nodes
+[info] TreeBasedAlgorithmSpec:
+[info] An tree-based algorithm
+[info] - should give correct sum on one node
+[info] - should give correct sum on 2 nodes
+[info] - should give correct sum on n nodes
 [info] ExpensiveSumAlgorithmSpec:
 [info] An expensive sum algorithm
 [info] - should give correct sum on one node
 [info] - should give correct sum on 2 nodes
 [info] - should give correct sum on n nodes
-[info] Run completed in 664 milliseconds.
-[info] Total number of tests run: 5
-[info] Suites: completed 2, aborted 0
-[info] Tests: succeeded 5, failed 0, canceled 0, ignored 0, pending 0
+[info] Run completed in 532 milliseconds.
+[info] Total number of tests run: 8
+[info] Suites: completed 3, aborted 0
+[info] Tests: succeeded 8, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
 ```
