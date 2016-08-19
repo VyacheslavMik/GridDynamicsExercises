@@ -1,6 +1,6 @@
 package griddynamicsexercise
 
-import scala.collection.mutable.{ ArrayBuffer, HashMap }
+import scala.collection.mutable.{ArrayBuffer, HashMap}
 
 import akka.actor.ActorRef
 
@@ -12,82 +12,86 @@ class TreeNode(
   nodes: HashMap[Int, ActorRef]
 ) extends Node(id, count, rand, sums, nodes) {
 
+  import context._
+
   private var m_buf = 0
 
-  private val m_parent: Option[Int] = {
+  private val mParent: Option[Int] = {
     val isEven = (id + 1) % 2 == 0
     val parent = if (isEven) (id + 1) / 2 else id / 2
     if (parent == 0) None else Some(parent - 1)
   }
 
-  private val m_left: Option[Int] = {
+  private val mLeft: Option[Int] = {
     val left = (id + 1) * 2 - 1
     if (left > count - 1) None else Some(left)
   }
 
-  private val m_right: Option[Int] = {
+  private val mRight: Option[Int] = {
     val right = (id + 1) * 2
     if (right > count - 1) None else Some(right)
   }
 
+  def receive = {
+    case Start =>
+      (mLeft, mRight) match {
+        case (None, None) =>
+          sendNumberToParent
+          become(receiveSum)
+
+        case _ =>
+          become(receiveNumbersFromChildren)
+      }
+  }
+
   def startAlgorithm() = {
-    (m_parent, m_left, m_right) match {
+    (mParent, mLeft, mRight) match {
       case (Some(parent), None, None) =>
-        sendTo(parent, p_number)
+        sendTo(parent, pNumber)
 
       case _ =>
     }
   }
 
-  def onMessageRecieved(value: Int) = {
-    (m_parent, m_left, m_right) match {
-      case (None, Some(left), Some(right)) =>
-        if (p_receivedMessages == 2) {
-          val sum = m_buf + value + p_number
-          sendTo(left, sum)
-          sendTo(right, sum)
-          printSum(sum)
-        } else {
-          m_buf = value
-        }
+  def sendNumberToParent = {
+    sendTo(mParent.get, pNumber)
+  }
 
-      case (None, Some(left), None) =>
-        val sum = value + p_number
-        sendTo(left, sum)
-        printSum(sum)
-
-      case (None, None, Some(right)) =>
-        val sum = value + p_number
-        sendTo(right, sum)
-        printSum(sum)
-
-      case (Some(_), None, None) =>
-        printSum(value)
-
-      case (Some(parent), Some(left), None) =>
-        if (p_receivedMessages == 1) sendTo(parent, value + p_number)
-        else {
-          sendTo(left, value)
-          printSum(value)
-        }
-
-      case (Some(parent), None, Some(right)) =>
-        if (p_receivedMessages == 1) sendTo(parent, value + p_number)
-        else {
-          sendTo(right, value)
-          printSum(value)
-        }
-
-      case (Some(parent), Some(left), Some(right)) =>
-        if (p_receivedMessages == 1) m_buf = value
-        else if (p_receivedMessages == 2) sendTo(parent, m_buf + p_number + value)
-        else {
-          sendTo(left, value)
-          sendTo(right, value)
-          printSum(value)
-        }
-
-      case (None, None, None) => Logger.warning(s"Unexpected case")
+  def receiveNumbersFromChildren: Receive = {
+    var count = (mLeft, mRight) match {
+      case (Some(_), None) | (None, Some(_)) => 1
+      case (Some(_), Some(_)) => 2
+      case _ => throw new RuntimeException("Unexpected case")
     }
+    var sum = pNumber
+
+    {
+      case Message(value) =>
+        count -= 1
+        sum += value
+
+        if (count == 0) {
+          mParent match {
+            case None =>
+              sendSumToChildren(sum)
+              printSum(sum)
+
+            case Some(parent) =>
+              sendTo(parent, sum)
+              become(receiveSum)
+          }
+        }
+    }
+  }
+
+  def receiveSum: Receive = {
+    case Message(value) =>
+      sendSumToChildren(value)
+      printSum(value)
+  }
+
+  def sendSumToChildren(sum: Int) = {
+    mLeft foreach { sendTo(_, sum) }
+    mRight foreach { sendTo(_, sum) }
   }
 }

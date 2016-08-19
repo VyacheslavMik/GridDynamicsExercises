@@ -1,17 +1,19 @@
 package griddynamicsexercise
 
-import akka.actor.{ ActorRef, ActorSystem, Props }
+import akka.actor.{ActorRef, ActorSystem, Props}
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import StringUtils._
 import scala.io.StdIn.readLine
 import scala.collection.mutable.HashMap
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 case object Start
 
 object Program {
 
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Unit = {
     val count = getCount
     val system = ActorSystem()
     val createNode = getNodeCtor
@@ -32,7 +34,7 @@ object Program {
       (node ! Start)
     }
 
-    system.awaitTermination()
+    Await.result(system.whenTerminated, Duration.Inf)
   }
 
   def getCount(): Int = {
@@ -40,8 +42,7 @@ object Program {
 
     do {
       n = readLine(s"Input node count (1 - ${Int.MaxValue}): ").toIntOpt
-    }
-    while(n == None || n.get <= 0 || n.get >= Int.MaxValue);
+    } while (n == None || n.get <= 0 || n.get >= Int.MaxValue);
 
     n.get
   }
@@ -54,13 +55,12 @@ object Program {
                       |2. Expensive sum algorithm.
                       |3. Tree-based algorithm.
                       |Select algorithm (1 or 2 or 3): """.stripMargin).toIntOpt
-    }
-    while(n == None || (n.get != 1 && n.get != 2 && n.get != 3));
+    } while (n == None || (n.get != 1 && n.get != 2 && n.get != 3));
 
     n.get match {
       case 1 => (i, count, rand, sums, nodes) => new SimpleNode(i, count, rand, sums, nodes)
       case 2 => (i, count, rand, sums, nodes) => new ExpensiveSumNode(i, count, rand, sums, nodes)
-      case 3 => (i, count, rand, sums, nodes) => new TreeNode(i, count, rand, sums, nodes) 
+      case 3 => (i, count, rand, sums, nodes) => new TreeNode(i, count, rand, sums, nodes)
     }
   }
 }

@@ -12,22 +12,38 @@ class SimpleNode(
   nodes: HashMap[Int, ActorRef]
 ) extends Node(id, count, rand, sums, nodes) {
 
-  private var m_buf = 0
+  import context._
 
-  def startAlgorithm(): Unit = {
-    if (id == 0) m_buf = p_number
-    else sendTo(0, p_number)
+  def receive = {
+    case Start =>
+      if (id == 0) become(receiveAllOtherNumbers)
+      else {
+        sendTo(0, pNumber)
+        become(receiveSum)
+      }
   }
 
-  def onMessageRecieved(value: Int) = {
-    if (id == 0) {
-      m_buf += value
+  def receiveAllOtherNumbers: Receive = {
+    var receivedMessages = 0
+    var sum = pNumber
 
-      if (p_receivedMessages == count - 1) {
-        for (i <- 1 until count) sendTo(i, m_buf)
-        printSum(m_buf)
-      }
+    {
+      case Message(value) =>
+        receivedMessages += 1
+        sum += value
+        sendSumToOtherNodes(receivedMessages, sum)
     }
-    else printSum(value)
+  }
+
+  def sendSumToOtherNodes(receivedMessages: Int, sum: Int) = {
+    if (receivedMessages == count - 1) {
+      for (i <- 1 until count) sendTo(i, sum)
+      printSum(sum)
+    }
+  }
+
+  def receiveSum: Receive = {
+    case Message(value) =>
+      printSum(value)
   }
 }
