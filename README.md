@@ -263,3 +263,12 @@ Info. Node 4. Calculated sum - -1113490623
 [info] Tests: succeeded 8, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
 ```
+
+# 5. Программа с использованием Docker'а.
+
+Создание контейнера `sbt docker:publishLocal`
+Создание менеджера: `docker run -i -t -p 5150:5150 grid-dynamics-exercise:1.0 manager`
+Создание ноды: `docker run -i -t grid-dynamics-exercise:1.0 node <ip менеджера> 5150 <id ноды> <количество нод> <номер алгоритма>`
+1 - простой алгоритм
+2 - сумма - затратная операция
+3 - основанный на двоичном дереве.
