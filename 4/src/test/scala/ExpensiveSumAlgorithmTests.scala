@@ -4,6 +4,8 @@ import akka.actor.{ ActorSystem, Props, ActorRef }
 import griddynamicsexercise._
 import org.scalatest._
 import scala.collection.mutable.{ ArrayBuffer, HashMap }
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class ExpensiveSumAlgorithmSpec extends FlatSpec with Matchers {
 
@@ -23,7 +25,7 @@ class ExpensiveSumAlgorithmSpec extends FlatSpec with Matchers {
 
     actor ! Start
 
-    system.awaitTermination()
+    Await.ready(system.whenTerminated, Duration.Inf)
 
     sums.length should be (1)
     sums(0) should be (sum)
@@ -52,7 +54,7 @@ class ExpensiveSumAlgorithmSpec extends FlatSpec with Matchers {
 
     for ((_, node) <- nodes) node ! Start
 
-    system.awaitTermination()
+    Await.ready(system.whenTerminated, Duration.Inf)
 
     sums.length should be (count)
     sums.forall { _ == sum } should be (true)
@@ -81,7 +83,7 @@ class ExpensiveSumAlgorithmSpec extends FlatSpec with Matchers {
 
     for ((_, node) <- nodes) node ! Start
 
-    system.awaitTermination()
+    Await.ready(system.whenTerminated, Duration.Inf)
 
     sums.length should be (count)
     sums.forall { _ == sum } should be (true)
